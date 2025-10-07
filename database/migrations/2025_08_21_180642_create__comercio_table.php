@@ -11,12 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('tareas', function (Blueprint $table) {
+        Schema::create('_comercio', function (Blueprint $table) {
             $table->id();
-            $table->string('descripcion', 255);
-            $table->string('prioridad')->default('normal');
-            $table->date('fecha_inicio');
-            $table->date('fecha_fin')->nullable();
             $table->timestamps();
         });
     }
@@ -26,6 +22,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('tareas');
+        Schema::dropIfExists('_comercio');
     }
 };

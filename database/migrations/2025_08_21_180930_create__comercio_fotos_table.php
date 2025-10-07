@@ -11,10 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('notas', function (Blueprint $table) {
+        Schema::create('_comercio_fotos', function (Blueprint $table) {
             $table->id();
-            $table->string('texto', 255);
-            $table->string('color', 20);
             $table->timestamps();
         });
     }
@@ -24,6 +22,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('notas');
+        Schema::dropIfExists('_comercio_fotos');
     }
 };
