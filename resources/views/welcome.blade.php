@@ -20,7 +20,7 @@
         <div class="relative min-h-screen selection:bg-[#82E0AA] selection:text-white">
             <img class="fondo" src="../../imagenes/fondo.jpg" alt="Fondo_Pantalla">
             <div class="relative min-h-screen flex flex-col items-center justify-center selection:bg-[#82E0AA] selection:text-white">
-                <div class="relative w-full max-w-2xl px-6 lg:max-w-7xl bg-gradient-to-r from-[#82E0AA] via-[#F9E79F] to-[#F5B041] rounded-2xl shadow-lg p-6">
+                <div class="relative min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-[#E3F2FD] via-[#BBDEFB] to-[#FFFFFF] selection:bg-[#82E0AA] selection:text-white">
                     <header class="grid grid-cols-2 items-center gap-2 py-10 lg:grid-cols-3">
                         <div class="flex lg:justify-center lg:col-start-2">
                             <!-- Placeholder for a new logo or just the name -->

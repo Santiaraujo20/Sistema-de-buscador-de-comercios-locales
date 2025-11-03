@@ -1,17 +1,37 @@
-<x-app-layout>
+@if (Auth::user()->role === 'comerciante')
+
+<!-- ======================================================= -->
+<!-- SI ES COMERCIANTE, CARGA EL LAYOUT DEL PANEL DE CONTROL -->
+<!-- ======================================================= -->
+<x-comerciante-layout>
+
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('Dashboard') }}
+            {{ __('Panel de Comerciante') }}
         </h2>
     </x-slot>
 
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6 text-gray-900">
-                    {{ __("You're logged in!") }}
-                </div>
-            </div>
-        </div>
-    </div>
+    @include('dashboard.comerciante')
+
+</x-comerciante-layout>
+
+
+@else
+
+<!-- ======================================================= -->
+<!-- SI ES USUARIO, CARGA EL LAYOUT PÚBLICO (CON GRADIENTE) -->
+<!-- ======================================================= -->
+<x-app-layout>
+
+    <x-slot name="header">
+        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+            {{ __('¡Hola, ') . Auth::user()->name . '!' }}
+        </h2>
+    </x-slot>
+
+    @include('dashboard.usuario')
+
 </x-app-layout>
+
+
+@endif

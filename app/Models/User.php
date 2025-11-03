@@ -6,6 +6,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Database\Eloquent\Relations\HasOne; // <-- AÑADIDA ESTA LÍNEA
 
 class User extends Authenticatable
 {
@@ -20,6 +21,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'role', // <-- AÑADIDA ESTA LÍNEA (DEL PASO 2)
     ];
 
     /**
@@ -43,5 +45,14 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    /**
+     * Define la relación: Un Usuario tiene (o puede tener) un Comercio.
+     * * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
+    public function comercio(): HasOne
+    {
+        return $this->hasOne(Comercio::class);
     }
 }
