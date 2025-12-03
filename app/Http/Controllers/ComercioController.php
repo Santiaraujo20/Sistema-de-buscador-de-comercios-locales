@@ -12,24 +12,42 @@ class ComercioController extends Controller
 {
     /**
      * Muestra la lista pública de comercios (con filtros).
+     *
+     * Se ha mejorado el filtro 'search' para incluir el campo 'rubro'.
      */
     public function index(Request $request): View
     {
-        // Iniciar la consulta con los más nuevos primero
-        $comercios = Comercio::latest()
-            // Si el término de búsqueda existe, filtrar por nombre y descripción
-            ->when($request->input('search'), function ($query, $searchTerm) {
-                $query->where('nombre', 'like', "%{$searchTerm}%")
-                      ->orWhere('descripcion', 'like', "%{$searchTerm}%");
-            })
-            // Si el rubro existe, filtrar por rubro
-            ->when($request->input('rubro'), function ($query, $rubro) {
-                $query->where('rubro', $rubro);
-            })
-            // Obtener 12 resultados por página (quitamos withQueryString para evitar errores del IDE)
-            ->paginate(12);
+        // 1. Iniciar la consulta con los más nuevos primero
+        $query = Comercio::latest();
 
-        // Enviar los comercios y los filtros a la vista
+        // 2. Aplicar filtro de búsqueda general (Nombre O Descripción O RUBRO)
+        $query->when($request->input('search'), function ($query, $searchTerm) {
+            $query->where(function ($q) use ($searchTerm) {
+                // Limpiamos el término de búsqueda (espacios y minúsculas)
+                $searchTerm = strtolower(trim($searchTerm));
+
+                // Comparamos la columna (limpiada con TRIM y LOWER) con el término
+                // AHORA INCLUYE EL RUBRO EN LA BÚSQUEDA GENERAL
+                $q->whereRaw('LOWER(TRIM(nombre)) LIKE ?', ["%{$searchTerm}%"])
+                  ->orWhereRaw('LOWER(TRIM(descripcion)) LIKE ?', ["%{$searchTerm}%"])
+                  ->orWhereRaw('LOWER(TRIM(rubro)) LIKE ?', ["%{$searchTerm}%"]); // <<< CAMBIO CLAVE
+            });
+        });
+
+        // 3. Aplicar filtro por rubro (Categoría) - (Condición AND)
+        // Este filtro se mantiene para búsquedas exactas (ej: si se hace clic en un tag/enlace de categoría)
+        $query->when($request->input('rubro'), function ($query, $rubro) {
+            // Limpiamos el término del rubro (espacios y minúsculas)
+            $rubroTerm = strtolower(trim($rubro));
+
+            // Comparamos la columna (limpiada con TRIM y LOWER) con el término
+            $query->whereRaw('LOWER(TRIM(rubro)) = ?', [$rubroTerm]);
+        });
+
+        // 4. Ejecutar la consulta y paginar
+        $comercios = $query->paginate(12);
+
+        // 5. Enviar los comercios y los filtros a la vista
         return view('comercios.index', [
             'comercios' => $comercios,
             'filters' => $request->only(['search', 'rubro'])
@@ -44,7 +62,6 @@ class ComercioController extends Controller
         if (Auth::user()->comercio) {
             return redirect()->route('comercio.edit')->with('status', 'Ya tienes un comercio registrado. Aquí puedes editarlo.');
         }
-        // CAMBIO CRÍTICO: Usar 'comercios.create' (plural)
         return view('comercios.create');
     }
 
@@ -90,8 +107,7 @@ class ComercioController extends Controller
      */
     public function show(Comercio $comercio): View
     {
-        // Laravel automáticamente encuentra el comercio usando el ID de la URL
-        return view('comercios.show', [ // Usamos 'comercios.show' (plural)
+        return view('comercios.show', [
             'comercio' => $comercio
         ]);
     }
@@ -112,7 +128,6 @@ class ComercioController extends Controller
             return redirect()->route('comercio.create')->with('status', 'Primero debes registrar tu comercio.');
         }
 
-        // CAMBIO CRÍTICO: Usar 'comercios.edit' (plural)
         return view('comercios.edit', [
             'comercio' => $comercio
         ]);
